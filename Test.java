@@ -4,15 +4,17 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class Test {
-    public static String outputPath = "";
+    public static boolean errorFlag = false;
 
     public static void main(String[] args) throws IOException {
-        FileInputStream fis = new FileInputStream(args[0]);
-        outputPath = args[1];
 
+        FileInputStream fis = new FileInputStream(args[0]);
+        FileOutputStream fos = new FileOutputStream(args[1]);
         byte[] arr = new byte[100];
         String s = "";
         int i = 0;
@@ -78,21 +80,29 @@ public class Test {
 
 
         CharStream inputStream = CharStreams.fromString(str); // 获取输入流
-        lab2Lexer lexer = new lab2Lexer(inputStream);
+        lab1Lexer lexer = new lab1Lexer(inputStream);
         lexer.removeErrorListeners();
         lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
 
         CommonTokenStream tokenStream = new CommonTokenStream(lexer); // 词法分析获取 token 流
-        lab2Parser parser = new lab2Parser(tokenStream);
+        lab1Parser parser = new lab1Parser(tokenStream);
         parser.removeErrorListeners();
         parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 
         ParseTree tree = parser.compUnit(); // 获取语法树的根节点
         // System.out.println(tree.toStringTree(parser)); // 打印字符串形式的语法树
 
+        if (errorFlag) {
+            System.out.println("error");
+            System.exit(1);
+        }
+
         Visitor visitor = new Visitor();
         visitor.visit(tree);
 
+        fos.write(Visitor.str.getBytes(StandardCharsets.UTF_8));
+
+        fos.close();
         fis.close();
     }
 }
