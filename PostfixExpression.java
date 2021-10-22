@@ -46,20 +46,11 @@ public class PostfixExpression {
         for (int i = 0; i < str1.length; i++) {
             int num = 0;
             boolean flag = false;
-            boolean negFlag = false;
 
-//            if (str1[i] == '-' && !Character.isDigit(str1[i - 1])) {
-//                i++;
-//                negFlag = true;
-//            }
             for (; i < str1.length && Character.isDigit(str1[i]); i++) {
                 num = num * 10 + Character.getNumericValue(str1[i]);
                 flag = true;
             }
-//            if (negFlag) {
-//                num = -num;
-//                negFlag = false;
-//            }
             if (flag) {
                 list.add(String.valueOf(num));
                 i--;
@@ -111,6 +102,10 @@ public class PostfixExpression {
                 }
                 case "/" -> {
                     sum = Integer.parseInt(list.get(i - 2)) / Integer.parseInt(list.get(i - 1));
+                    flag = true;
+                }
+                case "%" -> {
+                    sum = Integer.parseInt(list.get(i - 2)) % Integer.parseInt(list.get(i - 1));
                     flag = true;
                 }
             }

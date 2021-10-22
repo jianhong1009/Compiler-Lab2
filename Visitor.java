@@ -1,78 +1,114 @@
-/*
-compUnit: funcDef;
-funcDef: funcType ident '(' ')' block;
-funcType: 'int';
-ident: 'main';
-block: '{' stmt '}';
-stmt: 'return' number ';';
-number: DecimalConst | OctalConst | HexadecimalConst;
-*/
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
-public class Visitor extends lab1BaseVisitor<Void> {
-    public static String str = "";
+public class Visitor extends lab2BaseVisitor<Void> {
+    public PrintStream ps = new PrintStream(new FileOutputStream(Test.outputPath));
+    public static String exp = "";
+
+    public Visitor() throws FileNotFoundException {
+        System.setOut(ps);
+    }
 
     @Override
-    public Void visitCompUnit(lab1Parser.CompUnitContext ctx) {
+    public Void visitCompUnit(lab2Parser.CompUnitContext ctx) {
         return super.visitCompUnit(ctx);
     }
 
     @Override
-    public Void visitFuncDef(lab1Parser.FuncDefContext ctx) {
-        str += "define dso_local ";
-        // System.out.print("define dso_local ");
+    public Void visitFuncDef(lab2Parser.FuncDefContext ctx) {
+        System.out.print("define dso_local ");
         return super.visitFuncDef(ctx);
     }
 
     @Override
-    public Void visitFuncType(lab1Parser.FuncTypeContext ctx) {
-        str += "i32 ";
-        // System.out.print("i32 ");
+    public Void visitFuncType(lab2Parser.FuncTypeContext ctx) {
+        System.out.print("i32 ");
         return null;
     }
 
     @Override
-    public Void visitIdent(lab1Parser.IdentContext ctx) {
-        str += "@main() ";
-        // System.out.print("@main() ");
+    public Void visitIdent(lab2Parser.IdentContext ctx) {
+        System.out.print("@main() ");
         return null;
     }
 
     @Override
-    public Void visitBlock(lab1Parser.BlockContext ctx) {
-        str += "{\n";
-        // System.out.println("{");
+    public Void visitBlock(lab2Parser.BlockContext ctx) {
+        System.out.println("{");
         visit(ctx.stmt());
-        str += "}\n";
-        // System.out.println("}");
+        System.out.println("}");
         return null;
     }
 
     @Override
-    public Void visitStmt(lab1Parser.StmtContext ctx) {
-        str += "    ret ";
-        // System.out.print("    ret ");
-        visit(ctx.number());
+    public Void visitStmt(lab2Parser.StmtContext ctx) {
+        visit(ctx.exp());
+        System.out.print("    ret i32 ");
+        PostfixExpression.func(exp);
         return null;
     }
 
     @Override
-    public Void visitNumber(lab1Parser.NumberContext ctx) {
-        str += "i32 ";
-        // System.out.print("i32 ");
+    public Void visitExp(lab2Parser.ExpContext ctx) {
+        return super.visitExp(ctx);
+    }
+
+    @Override
+    public Void visitAddExp(lab2Parser.AddExpContext ctx) {
+        return super.visitAddExp(ctx);
+    }
+
+    @Override
+    public Void visitAddSub(lab2Parser.AddSubContext ctx) {
+        exp += ctx.getText();
+        return super.visitAddSub(ctx);
+    }
+
+    @Override
+    public Void visitMulExp(lab2Parser.MulExpContext ctx) {
+        return super.visitMulExp(ctx);
+    }
+
+    @Override
+    public Void visitMulDiv(lab2Parser.MulDivContext ctx) {
+        exp += ctx.getText();
+        return super.visitMulDiv(ctx);
+    }
+
+    @Override
+    public Void visitUnaryExp(lab2Parser.UnaryExpContext ctx) {
+        return super.visitUnaryExp(ctx);
+    }
+
+    @Override
+    public Void visitPrimaryExp(lab2Parser.PrimaryExpContext ctx) {
+        if (ctx.number() != null) {
+            visit(ctx.number());
+        } else {
+            exp += "(";
+            visit(ctx.exp());
+            exp += ")";
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitUnaryOp(lab2Parser.UnaryOpContext ctx) {
+        exp += ctx.getText();
+        return super.visitUnaryOp(ctx);
+    }
+
+    @Override
+    public Void visitNumber(lab2Parser.NumberContext ctx) {
         if (ctx.DecimalConst() != null) {
-            str += ctx.DecimalConst().getText();
-            str += '\n';
-            // System.out.println(ctx.DecimalConst().getText());
+            exp += ctx.DecimalConst().getText();
         } else if (ctx.OctalConst() != null) {
             String s = ctx.OctalConst().getText().substring(1);
-            str += String.valueOf(Integer.parseInt(s, 8));
-            str += '\n';
-            // System.out.println(Integer.parseInt(s, 8));
+            exp += String.valueOf(Integer.parseInt(s, 8));
         } else {
             String s = ctx.HexadecimalConst().getText().substring(2);
-            str += String.valueOf(Integer.parseInt(s, 16));
-            str += '\n';
-            // System.out.println(Integer.parseInt(s, 16));
+            exp += String.valueOf(Integer.parseInt(s, 16));
         }
         return null;
     }
