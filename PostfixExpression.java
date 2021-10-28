@@ -3,7 +3,9 @@ import java.util.List;
 import java.util.Stack;
 
 public class PostfixExpression {
-    public static void func(String s) {
+    public int num = 0;
+
+    public void func(String s) {
         s = s.replaceAll("\\s+", "");
 
         for (int i = 0; i < s.length(); i++) {
@@ -35,6 +37,7 @@ public class PostfixExpression {
 
         String s1 = new String(str);
         s1 = s1.replaceAll("\\s+", "");
+        // System.out.println(s1);
         char[] str1 = s1.toCharArray();
 
         List<String> list = new ArrayList<>();
@@ -84,33 +87,46 @@ public class PostfixExpression {
             list.add(opStack.pop());
         }
 
+        // System.out.println(list);
         int sum = 0;
         boolean flag = false;
         for (int i = 2; list.size() != 1; i++) {
             switch (list.get(i)) {
                 case "+" -> {
-                    sum = Integer.parseInt(list.get(i - 2)) + Integer.parseInt(list.get(i - 1));
+                    // sum = Integer.parseInt(list.get(i - 2)) + Integer.parseInt(list.get(i - 1));
+                    System.out.println("    %" + (num + 1) + " = " + "add i32 " + list.get(i - 2) + ", " + list.get(i - 1));
                     flag = true;
                 }
                 case "-" -> {
-                    sum = Integer.parseInt(list.get(i - 2)) - Integer.parseInt(list.get(i - 1));
+                    // sum = Integer.parseInt(list.get(i - 2)) - Integer.parseInt(list.get(i - 1));
+                    System.out.println("    %" + (num + 1) + " = " + "sub i32 " + list.get(i - 2) + ", " + list.get(i - 1));
                     flag = true;
                 }
                 case "*" -> {
-                    sum = Integer.parseInt(list.get(i - 2)) * Integer.parseInt(list.get(i - 1));
+                    // sum = Integer.parseInt(list.get(i - 2)) * Integer.parseInt(list.get(i - 1));
+                    System.out.println("    %" + (num + 1) + " = " + "mul i32 " + list.get(i - 2) + ", " + list.get(i - 1));
                     flag = true;
                 }
                 case "/" -> {
-                    sum = Integer.parseInt(list.get(i - 2)) / Integer.parseInt(list.get(i - 1));
+                    // sum = Integer.parseInt(list.get(i - 2)) / Integer.parseInt(list.get(i - 1));
+                    System.out.println("    %" + (num + 1) + " = " + "sdiv i32 " + list.get(i - 2) + ", " + list.get(i - 1));
                     flag = true;
                 }
                 case "%" -> {
-                    sum = Integer.parseInt(list.get(i - 2)) % Integer.parseInt(list.get(i - 1));
+                    // sum = Integer.parseInt(list.get(i - 2)) % Integer.parseInt(list.get(i - 1));
+                    System.out.println("    %" + (num + 1) + " = " + "sdiv i32 " + list.get(i - 2) + ", " + list.get(i - 1));
+                    num++;
+                    System.out.println("    %" + (num + 1) + " = " + "mul i32 " + "%" + num + ", " + list.get(i - 1));
+                    num++;
+                    System.out.println("    %" + (num + 1) + " = " + "sub i32 " + list.get(i - 2) + ", " + "%" + num);
                     flag = true;
                 }
             }
+
             if (flag) {
-                list.set(i, String.valueOf(sum));
+                // list.set(i, String.valueOf(sum));
+                num++;
+                list.set(i, "%" + num);
                 list.remove(i - 1);
                 list.remove(i - 2);
                 i = 1;
@@ -118,6 +134,6 @@ public class PostfixExpression {
             }
         }
 
-        System.out.println(list.get(0));
+        System.out.println("    ret i32 " + list.get(0));
     }
 }

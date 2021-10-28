@@ -44,8 +44,8 @@ public class Visitor extends lab2BaseVisitor<Void> {
     @Override
     public Void visitStmt(lab2Parser.StmtContext ctx) {
         visit(ctx.exp());
-        System.out.print("    ret i32 ");
-        PostfixExpression.func(exp);
+        //System.out.print("    ret i32 ");
+        new PostfixExpression().func(exp);
         return null;
     }
 
